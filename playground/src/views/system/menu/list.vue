@@ -117,7 +117,7 @@ function onDelete(row: SystemMenuApi.SystemMenu) {
       <template #toolbar-tools>
         <Button type="primary" @click="onCreate">
           <Plus class="size-5" />
-          {{ $t('ui.actionTitle.create', [$t('system.menu.name')]) }}
+          {{ 增加 }}
         </Button>
       </template>
       <template #title="{ row }">

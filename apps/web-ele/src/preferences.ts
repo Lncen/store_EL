@@ -11,5 +11,9 @@ export const overridesPreferences = defineOverridesPreferences({
     name: import.meta.env.VITE_APP_TITLE,
     // 动态路由模式
     accessMode: 'backend',
+    // 登录过期跳转 登录界面
+    loginExpiredMode: 'modal',
+    // 刷新令牌
+    enableRefreshToken: true,
   },
 });

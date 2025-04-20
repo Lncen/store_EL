@@ -27,7 +27,7 @@ export function useFormSchema(): VbenFormSchema[] {
       label: $t('system.role.status'),
     },
     {
-      component: 'Textarea',
+      component: 'Input',
       fieldName: 'remark',
       label: $t('system.role.remark'),
     },
@@ -82,7 +82,7 @@ export function useColumns<T = SystemRoleApi.SystemRole>(
     {
       field: 'name',
       title: $t('system.role.roleName'),
-      width: 200,
+      width: 100,
     },
     {
       field: 'id',

@@ -98,6 +98,7 @@ function getNodeClass(node: Recordable<any>) {
   <Drawer :title="getDrawerTitle">
     <Form>
       <template #permissions="slotProps">
+        {{ console.log('slotProps:', slotProps) }}
         <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
           <VbenTree
             :tree-data="permissions"

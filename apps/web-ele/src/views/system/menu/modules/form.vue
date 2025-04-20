@@ -16,6 +16,7 @@ import { useVbenForm, z } from '#/adapter/form';
 import {
   createMenu,
   getMenuList,
+  isMenuAuthCodeExists,
   isMenuNameExists,
   isMenuPathExists,
   SystemMenuApi,
@@ -31,6 +32,7 @@ const emit = defineEmits<{
 }>();
 const formData = ref<SystemMenuApi.SystemMenu>();
 const titleSuffix = ref<string>();
+const defaultRadioGroup = ref<string>();
 const schema: VbenFormSchema[] = [
   {
     component: 'RadioGroup',
@@ -39,7 +41,7 @@ const schema: VbenFormSchema[] = [
       options: getMenuTypeOptions(),
       optionType: 'button',
     },
-    defaultValue: 'menu',
+    defaultValue: defaultRadioGroup,
     fieldName: 'type',
     formItemClass: 'col-span-2 md:col-span-2',
     label: $t('system.menu.type'),
@@ -54,6 +56,11 @@ const schema: VbenFormSchema[] = [
       .max(30, $t('ui.formRules.maxLength', [$t('system.menu.menuName'), 30]))
       .refine(
         async (value: string) => {
+          // 如果是编辑模式且当前值未改变，则跳过校验
+          if (formData.value?.id && value === formData.value?.name) {
+            return true;
+          }
+          // 否则调用异步校验函数检查名称是否存在
           return !(await isMenuNameExists(value, formData.value?.id));
         },
         (value) => ({
@@ -137,6 +144,9 @@ const schema: VbenFormSchema[] = [
       )
       .refine(
         async (value: string) => {
+          if (formData.value?.id && value === formData.value?.path) {
+            return true;
+          }
           return !(await isMenuPathExists(value, formData.value?.id));
         },
         (value) => ({
@@ -169,6 +179,9 @@ const schema: VbenFormSchema[] = [
         $t('ui.formRules.startWith', [$t('system.menu.path'), '/']),
       )
       .refine(async (value: string) => {
+        if (formData.value?.id && value === formData.value?.path) {
+          return true;
+        }
         return await isMenuPathExists(value, formData.value?.id);
       }, $t('system.menu.activePathMustExist'))
       .optional(),
@@ -249,6 +262,25 @@ const schema: VbenFormSchema[] = [
     },
     fieldName: 'authCode',
     label: $t('system.menu.authCode'),
+    rules: z
+      .string()
+      .min(2, $t('ui.formRules.minLength', [$t('system.menu.path'), 3]))
+      .max(6, $t('ui.formRules.maxLength', [$t('system.menu.path'), 8]))
+      // .regex(/^[a-z0-9]{2,8}$/i, $t('只能是数字或者字母'))
+      .refine(
+        async (value: string) => {
+          if (formData.value?.id && value === formData.value?.authCode) {
+            return true;
+          }
+          return !(await isMenuAuthCodeExists(value, formData.value?.id));
+        },
+        (value) => ({
+          message: $t('ui.formRules.alreadyExists', [
+            $t('system.menu.authCode'),
+            value,
+          ]),
+        }),
+      ),
   },
   {
     component: 'RadioGroup',
@@ -447,6 +479,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = drawerApi.getData<SystemMenuApi.SystemMenu>();
+      defaultRadioGroup.value = data?.type;
       if (data?.type === 'link') {
         data.linkSrc = data.meta?.link;
       } else if (data?.type === 'embedded') {

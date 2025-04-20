@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
@@ -13,265 +15,12 @@ import {
   ElTag,
 } from 'element-plus';
 
-import { deleteMenu, SystemMenuApi } from '#/api/system/menu';
+import { deleteMenu, getMenuList, SystemMenuApi } from '#/api/system/menu';
 import { $t } from '#/locales';
 
-// import { useColumns } from './data';
 import Form from './modules/form.vue';
 
-const tableData = [
-  {
-    id: 1,
-    meta: {
-      id: 212,
-      affixTabOrder: 0,
-      icon: 'lucide:layout-dashboard',
-      order: -1,
-      title: 'page.dashboard.title',
-    },
-    children: [
-      {
-        id: 14,
-        meta: {
-          id: 213,
-          affixTab: true,
-          affixTabOrder: 0,
-          icon: 'lucide:area-chart',
-          title: 'page.dashboard.analytics',
-        },
-        name: 'Analytics',
-        path: '/analytics',
-        component: '/views/dashboard/analytics/index.vue',
-        type: 'menu',
-        status: 1,
-        pid: 1,
-      },
-      {
-        id: 15,
-        meta: {
-          id: 214,
-          affixTabOrder: 0,
-          icon: 'carbon:workspace',
-          title: 'page.dashboard.workspace',
-        },
-        name: 'Workspace',
-        path: '/workspace',
-        component: '/views/dashboard/workspace/index.vue',
-        type: 'menu',
-        status: 1,
-        pid: 1,
-      },
-    ],
-    name: 'Dashboard',
-    path: '/dashboard',
-    type: 'menu',
-    status: 1,
-  },
-  {
-    id: 2,
-    meta: {
-      id: 215,
-      affixTabOrder: 0,
-      icon: 'ic:baseline-view-in-ar',
-      keepAlive: true,
-      order: 1000,
-      title: 'demos.title',
-    },
-    children: [
-      {
-        id: 20,
-        meta: {
-          id: 216,
-          affixTabOrder: 0,
-          title: 'demos.elementPlus',
-        },
-        name: 'NaiveDemos',
-        path: '/demos/element',
-        component: '/views/demos/element/index.vue',
-        type: 'menu',
-        status: 1,
-        pid: 2,
-      },
-      {
-        id: 21,
-        meta: {
-          id: 217,
-          affixTabOrder: 0,
-          title: 'demos.form',
-        },
-        name: 'BasicForm',
-        path: '/demos/form',
-        component: '/views/demos/form/basic.vue',
-        type: 'menu',
-        status: 1,
-        pid: 2,
-      },
-    ],
-    name: 'Demos',
-    path: '/demos',
-    type: 'menu',
-    status: 1,
-  },
-  {
-    id: 3,
-    meta: {
-      id: 218,
-      affixTabOrder: 0,
-      icon: 'ion:settings-outline',
-      order: 9997,
-      title: 'system.title',
-    },
-    children: [
-      {
-        id: 31,
-        meta: {
-          id: 219,
-          affixTabOrder: 0,
-          icon: 'mdi:account-group',
-          title: 'system.role.title',
-        },
-        name: 'SystemRole',
-        path: '/system/role',
-        component: '/views/system/role/index',
-        type: 'menu',
-        status: 1,
-        pid: 3,
-      },
-      {
-        id: 33,
-        meta: {
-          id: 220,
-          affixTabOrder: 0,
-          icon: 'mdi:menu',
-          title: 'system.menu.title',
-        },
-        name: 'SystemMenu',
-        path: '/system/menu',
-        component: '/views/system/menu/index',
-        type: 'menu',
-        status: 1,
-        pid: 3,
-      },
-      {
-        id: 34,
-        meta: {
-          id: 221,
-          affixTabOrder: 0,
-          icon: 'charm:organisation',
-          title: 'system.dept.title',
-        },
-        name: 'SystemDept',
-        path: '/system/dept',
-        component: '/views/system/dept/index',
-        type: 'menu',
-        status: 1,
-        pid: 3,
-      },
-    ],
-    name: 'System',
-    path: '/system',
-    type: 'menu',
-    status: 1,
-  },
-  {
-    id: 5,
-    meta: {
-      id: 222,
-      affixTabOrder: 0,
-      badgeType: 'dot',
-      icon: 'mdi:menu',
-      order: 9998,
-      title: 'demos.vben.title',
-    },
-    children: [
-      {
-        id: 40,
-        meta: {
-          id: 223,
-          affixTabOrder: 0,
-          icon: 'lucide:book-open-text',
-          link: 'VBEN_DOC_URL',
-          title: 'demos.vben.document',
-        },
-        name: 'VbenDocument',
-        path: '/vben-admin/document',
-        component: 'IFrameView',
-        type: 'menu',
-        status: 1,
-        pid: 5,
-      },
-      {
-        id: 42,
-        meta: {
-          id: 225,
-          affixTabOrder: 0,
-          badgeType: 'dot',
-          icon: 'logos:naiveui',
-          link: 'VBEN_NAIVE_PREVIEW_URL',
-          title: 'demos.vben.naive-ui',
-        },
-        name: 'VbenNaive',
-        path: '/vben-admin/naive',
-        component: 'IFrameView',
-        type: 'menu',
-        status: 1,
-        pid: 5,
-      },
-      {
-        id: 43,
-        meta: {
-          id: 226,
-          affixTabOrder: 0,
-          badgeType: 'dot',
-          icon: 'SvgAntdvLogoIcon',
-          link: 'VBEN_ANT_PREVIEW_URL',
-          title: 'demos.vben.antdv',
-        },
-        name: 'VbenAntd',
-        path: '/vben-admin/antd',
-        component: 'IFrameView',
-        type: 'menu',
-        status: 1,
-        pid: 5,
-      },
-      {
-        id: 48,
-        meta: {
-          id: 224,
-          affixTabOrder: 0,
-          icon: 'mdi:github',
-          link: 'VBEN_GITHUB_URL',
-          title: 'Github',
-        },
-        name: 'VbenGithub',
-        path: '/vben-admin/github',
-        component: 'IFrameView',
-        type: 'menu',
-        status: 1,
-        pid: 5,
-      },
-    ],
-    name: 'VbenProject',
-    path: '/vben-admin',
-    type: 'menu',
-    status: 1,
-  },
-  {
-    id: 6,
-    meta: {
-      id: 227,
-      affixTabOrder: 0,
-      icon: 'lucide:copyright',
-      order: 9999,
-      title: 'demos.vben.about',
-    },
-    name: 'VbenAbout',
-    path: '/vben-admin/about',
-    component: '#/views/_core/about/index.vue',
-    type: 'menu',
-    status: 1,
-  },
-];
+const tableData = ref<SystemMenuApi.SystemMenu[]>([]);
 
 // #region 类型字段设置标签
 type RouteType = 'danger' | 'info' | 'primary' | 'success' | 'warning';
@@ -304,12 +53,16 @@ function onEdit(row: SystemMenuApi.SystemMenu) {
   formDrawerApi.setData(row).open();
 }
 function onCreate() {
-  formDrawerApi.setData({}).open();
+  formDrawerApi
+    .setData({
+      // 新建默认选中目录选项
+      type: 'catalog',
+    })
+    .open();
 }
 function onAppend(row: SystemMenuApi.SystemMenu) {
-  formDrawerApi.setData({ pid: row.id }).open();
+  formDrawerApi.setData({ pid: row.id, type: 'menu' }).open();
 }
-
 const onDelete = (row: string) => {
   const loadingInstance = ElLoading.service({
     lock: true, // 是否锁定屏幕（禁止用户交互）
@@ -317,14 +70,34 @@ const onDelete = (row: string) => {
     background: 'rgba(0, 0, 0, 0.2)', // 背景遮罩颜色
   });
   deleteMenu(row)
-    .then(() => {})
+    .then(() => {
+      fetchMenuList();
+    })
     .catch(() => {})
     .finally(() => {
-      setTimeout(() => {
-        loadingInstance.close(); // 手动关闭 Loading
-      }, 2000);
+      loadingInstance.close(); // 手动关闭 Loading
     });
 };
+// #endregion
+
+// #region 数据加载
+async function fetchMenuList() {
+  // loading.value = true;
+  try {
+    const res = await getMenuList();
+    tableData.value = res || [];
+  } catch (error) {
+    console.error('获取菜单列表失败:', error);
+  } finally {
+    // loading.value = false;
+  }
+}
+
+const handleRefresh = () => {
+  // 刷新数据
+  fetchMenuList();
+};
+
 // #endregion
 
 // #region  抽屉组件
@@ -333,23 +106,23 @@ const [FormDrawer, formDrawerApi] = useVbenDrawer({
   destroyOnClose: true,
 });
 
-const open = () => {
-  formDrawerApi.open();
-};
-
-const onRefresh = (row: any) => {
-  console.log('表单', row);
+const onRefresh = () => {
+  fetchMenuList();
 };
 // #endregion
+
+onMounted(() => {
+  fetchMenuList();
+});
 </script>
 
 <template>
   <Page>
-    <FormDrawer @success="onRefresh" />
+    <FormDrawer @success="onRefresh" @onclose="onRefresh" />
     <ElCard>
       <div align="right">
-        <ElButton type="primary" @click="onCreate">新增菜单</ElButton>
-        <ElButton type="primary">刷新</ElButton>
+        <ElButton type="primary" @click="onCreate">新增</ElButton>
+        <ElButton type="primary" @click="handleRefresh">刷新</ElButton>
       </div>
 
       <ElTable
@@ -430,7 +203,7 @@ const onRefresh = (row: any) => {
                 @confirm="onDelete(row.id)"
               >
                 <template #reference>
-                  <ElButton type="text">删除</ElButton>
+                  <ElButton type="danger" link>删除</ElButton>
                 </template>
               </ElPopconfirm>
             </ElSpace>

@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { DataNode } from 'ant-design-vue/es/tree';
-
 import type { Recordable } from '@vben/types';
 
 import type { SystemRoleApi } from '#/api/system/role';
@@ -9,8 +7,6 @@ import { computed, ref } from 'vue';
 
 import { useVbenDrawer, VbenTree } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
-
-import { Spin } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import { getMenuList } from '#/api/system/menu';
@@ -28,8 +24,7 @@ const [Form, formApi] = useVbenForm({
   showDefaultActions: false,
 });
 
-const permissions = ref<DataNode[]>([]);
-const loadingPermissions = ref(false);
+const permissions = ref<any[]>([]);
 
 const id = ref();
 const [Drawer, drawerApi] = useVbenDrawer({
@@ -67,12 +62,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
 });
 
 async function loadPermissions() {
-  loadingPermissions.value = true;
   try {
     const res = await getMenuList();
-    permissions.value = res as unknown as DataNode[];
+    permissions.value = res;
   } finally {
-    loadingPermissions.value = false;
+    //
   }
 }
 
@@ -95,27 +89,26 @@ function getNodeClass(node: Recordable<any>) {
 }
 </script>
 <template>
-  <Drawer :title="getDrawerTitle">
+  <!-- 抽屉宽度 -->
+  <Drawer :title="getDrawerTitle" class="w-full max-w-[550px]">
     <Form>
       <template #permissions="slotProps">
-        <Spin :spinning="loadingPermissions" wrapper-class-name="w-full">
-          <VbenTree
-            :tree-data="permissions"
-            multiple
-            bordered
-            :default-expanded-level="2"
-            :get-node-class="getNodeClass"
-            v-bind="slotProps"
-            value-field="id"
-            label-field="meta.title"
-            icon-field="meta.icon"
-          >
-            <template #node="{ value }">
-              <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
-              {{ $t(value.meta.title) }}
-            </template>
-          </VbenTree>
-        </Spin>
+        <VbenTree
+          :tree-data="permissions"
+          multiple
+          bordered
+          :default-expanded-level="2"
+          :get-node-class="getNodeClass"
+          v-bind="slotProps"
+          value-field="id"
+          label-field="meta.title"
+          icon-field="meta.icon"
+        >
+          <template #node="{ value }">
+            <IconifyIcon v-if="value.meta.icon" :icon="value.meta.icon" />
+            {{ $t(value.meta.title) }}
+          </template>
+        </VbenTree>
       </template>
     </Form>
   </Drawer>

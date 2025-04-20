@@ -17,7 +17,6 @@ import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 import { useVbenForm, z } from '#/adapter/form';
 import {
   createMenu,
-  getMenuList,
   isMenuNameExists,
   isMenuPathExists,
   SystemMenuApi,
@@ -69,7 +68,7 @@ const schema: VbenFormSchema[] = [
   {
     component: 'ApiTreeSelect',
     componentProps: {
-      api: getMenuList,
+      // api: getMenuList,
       class: 'w-full',
       filterTreeNode(input: string, node: Recordable<any>) {
         if (!input || input.length === 0) {
@@ -448,6 +447,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
     if (isOpen) {
       const data = drawerApi.getData<SystemMenuApi.SystemMenu>();
+
       if (data?.type === 'link') {
         data.linkSrc = data.meta?.link;
       } else if (data?.type === 'embedded') {

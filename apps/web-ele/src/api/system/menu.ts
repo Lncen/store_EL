@@ -101,7 +101,7 @@ async function isMenuNameExists(
   name: string,
   id?: SystemMenuApi.SystemMenu['id'],
 ) {
-  return requestClient.get<boolean>('/system/menu/name-exists/', {
+  return requestClient.get<boolean>('menu/name-exists/', {
     params: { id, name },
   });
 }
@@ -110,8 +110,17 @@ async function isMenuPathExists(
   path: string,
   id?: SystemMenuApi.SystemMenu['id'],
 ) {
-  return requestClient.get<boolean>('/system/menu/path-exists/', {
+  return requestClient.get<boolean>('menu/path-exists/', {
     params: { id, path },
+  });
+}
+
+async function isMenuAuthCodeExists(
+  authCode: string,
+  id?: SystemMenuApi.SystemMenu['id'],
+) {
+  return requestClient.get<boolean>('menu/authCode-exists/', {
+    params: { id, authCode },
   });
 }
 
@@ -150,6 +159,7 @@ export {
   createMenu,
   deleteMenu,
   getMenuList,
+  isMenuAuthCodeExists,
   isMenuNameExists,
   isMenuPathExists,
   updateMenu,

@@ -24,7 +24,7 @@ import Form from './modules/form.vue';
 const tableData = ref<SystemRoleApi.SystemRole[]>([]);
 
 // #region  API访问
-function onEdit(row: SystemMenuApi.SystemMenu) {
+function onEdit(row: SystemRoleApi.SystemRole) {
   formDrawerApi.setData(row).open();
 }
 function onCreate() {

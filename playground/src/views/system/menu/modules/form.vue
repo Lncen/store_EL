@@ -68,6 +68,7 @@ const schema: VbenFormSchema[] = [
   {
     component: 'ApiTreeSelect',
     componentProps: {
+      checkStrictly: true,
       // api: getMenuList,
       class: 'w-full',
       filterTreeNode(input: string, node: Recordable<any>) {

@@ -8,7 +8,9 @@
     "parentDept": "上级部门",
     "remark": "备注",
     "status": "状态",
-    "title": "部门管理"
+    "title": "部门管理",
+    "Markup": "加价",
+    "MarkupType": "加价类型"
   },
   "menu": {
     "list": "菜单列表",

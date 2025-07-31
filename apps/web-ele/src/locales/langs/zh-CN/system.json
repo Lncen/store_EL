@@ -65,5 +65,8 @@
     "permissions": "权限",
     "setPermissions": "授权"
   },
+  "user": {
+    "title": "用户管理"
+  },
   "title": "系统管理"
 }
